@@ -41,7 +41,7 @@ def CompareImage(Haystack, Needle):
 				# possible first pixel found
 				# create crop
 
-				CroppedHaystack = Haystack.crop([x, NeedleBBox[2], y, NeedleBBox[3]])
+				CroppedHaystack = Haystack.crop([x, NeedleBBox[1], y, NeedleBBox[3]])
 				CroppedHaystack_RawData = CroppedHaystack.getdata()
 
 				found = True
@@ -54,10 +54,11 @@ def CompareImage(Haystack, Needle):
 
 				if found:
 					bbox = [x, y, x + NeedleBBox[2], y + NeedleBBox[3]]
-					CroppedHaystack = Haystack.crop(bbox)
 					print bbox
+					CroppedHaystack = Haystack.crop(bbox)
 					CroppedHaystack.load()
 					CroppedHaystack.save("test.png")
+					return bbox
 
 				break
 
