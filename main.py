@@ -5,7 +5,9 @@ import PIL
 import Image
 import ImageGrab
 import os
+import sys
 import bitly
+import simplejson
 
 # 1. Take a screenshot of the desktop.
 # 2. If TweetDeck isn't running, run it. (possibly put this first)
@@ -135,7 +137,7 @@ def RunTweetDeck():
 
 def CheckTweet(tweet, bitlyUser, bitlyKey):
 	# checks the tweet before sending
-	if len(tweet) > 140 or True:
+	if len(tweet) > 140:
 		#check if tweet has a URL that we can shorten
 		URLStart = tweet.upper().find('HTTP')
 		if URLStart > -1:
@@ -145,14 +147,18 @@ def CheckTweet(tweet, bitlyUser, bitlyKey):
 			URL = tweet[URLStart:URLEnd]
 
 			print ("Tweet too long. Using bit.ly....")
-			response = raw_input("URL found is: %s. Is this correct (y/n)?" % (URL))
+			prompt = "URL found is: %s. Is this correct (y/n)?" % (URL)
+			try:
+				response = raw_input(prompt)
+			except NameError:
+				response = input(prompt)
 
 			if (response == "y"):
 				try:
 					api = bitly.Api(login=bitlyUser, apikey=bitlyKey)
 					short = api.shorten(URL)
 				except:
-					print ("Bit.ly API key is not correct. Skipping Bit.ly")
+					print ("Bit.ly API key is not correct. Please check config.txt. Skipping Bit.ly")
 
 				tweet = tweet.replace(URL, short)
 
@@ -205,5 +211,11 @@ def Main(tweet, bitlyUser, bitlyKey):
 bitlyUser = ""
 bitlyKey = ""
 
-tweet = "Back to work... http://code.google.com/p/python-bitly/"
-Main(tweet, bitlyUser, bitlyKey)
+with open("config.txt", "r") as f:
+	config = simplejson.load (f)
+
+if len(sys.argv) != 2:
+	print ("To use this program, you need to add the tweet:\npython main.py \"My Tweet\"")
+else:
+	tweet = sys.argv[1]
+	Main(tweet, config["bitlyUser"], config["bitlyKey"])

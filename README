@@ -16,10 +16,10 @@ Required packages (for source code):
 	** http://www.pythonware.com/products/pil/
 	* Win32Com
 	** http://python.net/crew/skippy/win32/Downloads.html
+	* SimpleJson
+	** http://cheeseshop.python.org/pypi/simplejson
 	* Python Bitly
 	** http://code.google.com/p/python-bitly/
-	** dependency: SimpleJson
-	*** http://cheeseshop.python.org/pypi/simplejson
 
 
 License:
