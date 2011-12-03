@@ -5,6 +5,7 @@ import PIL
 import Image
 import ImageGrab
 import os
+import bitly
 
 # 1. Take a screenshot of the desktop.
 # 2. If TweetDeck isn't running, run it. (possibly put this first)
@@ -97,7 +98,7 @@ def ClickOnTweetdeck(x, y):
 	win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,x,y,0,0)
 	win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,x,y,0,0)
 
-def SendMessage(message):
+def SendMessage(shell, message):
 	shell.SendKeys(message)
 	shell.SendKeys("~")
 
@@ -129,11 +130,43 @@ def RunTweetDeck():
 		print ("TweetDeck not found in Program Files")
 		return False
 
-	#subprocess.call([exe])
 	subprocess.Popen([exe])
 	return True
 
-def Main():
+def CheckTweet(tweet, bitlyUser, bitlyKey):
+	# checks the tweet before sending
+	if len(tweet) > 140 or True:
+		#check if tweet has a URL that we can shorten
+		URLStart = tweet.upper().find('HTTP')
+		if URLStart > -1:
+			URLEnd = tweet.upper().find(' ', URLStart + 1)
+			if URLEnd == -1:
+				URLEnd = len(tweet)
+			URL = tweet[URLStart:URLEnd]
+
+			print ("Tweet too long. Using bit.ly....")
+			response = raw_input("URL found is: %s. Is this correct (y/n)?" % (URL))
+
+			if (response == "y"):
+				try:
+					api = bitly.Api(login=bitlyUser, apikey=bitlyKey)
+					short = api.shorten(URL)
+				except:
+					print ("Bit.ly API key is not correct. Skipping Bit.ly")
+
+				tweet = tweet.replace(URL, short)
+
+	if len(tweet) > 140:
+		print ("Your tweet is too long. Can't send tweet.")
+		return False
+
+	return tweet
+
+def Main(tweet, bitlyUser, bitlyKey):
+	tweet = CheckTweet(tweet, bitlyUser, bitlyKey)
+	if tweet == False:
+		return
+
 	shell = win32com.client.Dispatch("WScript.Shell")
 
 	TweetDeck_TextBox = Image.open("click_here.png")
@@ -167,6 +200,10 @@ def Main():
 		print ("Tweetdeck was not found")
 	else:
 		ClickOnTweetdeck(x, y)
-		#SendMessage("")
+		SendMessage(shell, tweet)
 
-Main()
+bitlyUser = ""
+bitlyKey = ""
+
+tweet = "Back to work... http://code.google.com/p/python-bitly/"
+Main(tweet, bitlyUser, bitlyKey)

@@ -4,4 +4,8 @@ Required package:
 	* PIL
 	** http://www.pythonware.com/products/pil/
 	* Win32Com
-	** http://python.net/crew/skippy/win32/Downloads.html/
+	** http://python.net/crew/skippy/win32/Downloads.html
+	* Python Bitly
+	** http://code.google.com/p/python-bitly/
+	** dependency: SimpleJson
+	*** http://cheeseshop.python.org/pypi/simplejson
