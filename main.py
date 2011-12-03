@@ -72,13 +72,13 @@ def CompareImage(Haystack, Needle):
 				bbox = [x, y, x + NeedleBBox[2], y + NeedleBBox[3]]
 				CroppedHaystack = Haystack.crop(bbox)
 				CroppedHaystack.load()
-				CroppedHaystack.save("debug2.png")
+				#CroppedHaystack.save("debug2.png")
 
 				if Found:
 					bbox = [x, y, x + NeedleBBox[2], y + NeedleBBox[3]]
 					CroppedHaystack = Haystack.crop(bbox)
 					CroppedHaystack.load()
-					CroppedHaystack.save("debug.png")
+					#CroppedHaystack.save("debug.png")
 					return [x, y]
 
 				continue
