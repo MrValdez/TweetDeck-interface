@@ -37,25 +37,34 @@ def CompareImage(Haystack, Needle):
 				# possible first pixel found
 				# create crop
 
-				CroppedHaystack = Haystack.crop([x, y, NeedleBBox[2], NeedleBBox[3]])
+				CroppedHaystack = Haystack.crop([x, y, x + NeedleBBox[2], y + NeedleBBox[3]])
 				CroppedHaystack_RawData = CroppedHaystack.getdata()
 
-				found = True
+				Found = True
 				i = 0
 				for pixel in CroppedHaystack_RawData:
 					if Needle_RawData[i] != pixel:
-						found = False
+						Found = False
 						break
-					i = i + 1
 
-				if found:
+					i = i + 1
+				if i == 0:
+					continue
+
+				bbox = [x, y, x + NeedleBBox[2], y + NeedleBBox[3]]
+				CroppedHaystack = Haystack.crop(bbox)
+				CroppedHaystack.load()
+				CroppedHaystack.save("debug2.png")
+
+				#if i == len(CroppedHaystack_RawData) - 1:
+				if Found:
 					bbox = [x, y, x + NeedleBBox[2], y + NeedleBBox[3]]
 					CroppedHaystack = Haystack.crop(bbox)
 					CroppedHaystack.load()
 					CroppedHaystack.save("debug.png")
 					return [x, y]
 
-				break
+				continue
 
 			currentIndex = currentIndex + 1
 
@@ -63,9 +72,16 @@ def CompareImage(Haystack, Needle):
 				print ("Not Found")
 				break
 
-	return None
+	return None, None
+
+import win32com.client
+shell = win32com.client.Dispatch("WScript.Shell")
+shell.AppActivate('TweetDeck')
 
 x, y = CompareImage(screenshot, TweetDeck_TextBox)
+
+if x == None or y == None:
+	print ("Not found")
 
 import win32api, win32con
 def click(x,y):
@@ -73,12 +89,11 @@ def click(x,y):
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,x,y,0,0)
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,x,y,0,0)
 
-offset = 50
+print x,y
+offset = 10
 click(x + offset, y + offset)
 
 # http://code.activestate.com/recipes/65107/
 
-import win32com.client
-shell = win32com.client.Dispatch("WScript.Shell")
-shell.SendKeys("It works! Just a few more cleanup... https://github.com/MrValdez/TweetDeck-interface")
-shell.SendKeys("~")
+#shell.SendKeys("It works! Just a few more cleanup... https://github.com/MrValdez/TweetDeck-interface")
+#shell.SendKeys("~")
