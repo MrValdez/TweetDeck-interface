@@ -6,7 +6,7 @@ import ImageGrab
 # 2. If TweetDeck isn't running, run it. (possibly put this first)
 # 3. Put TweetDeck in front
 # 4. Take a screenshot
-# 5. Find TweetDeck
+# 5. Find TweetDeck. Return the x, y of the textarea
 # 6. Click on TweetDeck's textarea
 # 7. Type a tweet
 # 8. Press Enter
@@ -32,16 +32,12 @@ def CompareImage(Haystack, Needle):
 
 	for y in range(HaystackBBox[3] - NeedleBBox[3]):
 		for x in range(HaystackBBox[2] - NeedleBBox[2]):
-	#		print Haystack_RawData[x], Needle_RawData[x]
 			location = (y * HaystackBBox[2]) + x
 			if Haystack_RawData[location] == Needle_RawData[0]:
-	#		if Haystack_RawData[x][0] == Needle_RawData[0][0] and \
-	#		   Haystack_RawData[x][1] == Needle_RawData[0][1] and \
-	#		   Haystack_RawData[x][2] == Needle_RawData[0][2]:
 				# possible first pixel found
 				# create crop
 
-				CroppedHaystack = Haystack.crop([x, NeedleBBox[1], y, NeedleBBox[3]])
+				CroppedHaystack = Haystack.crop([x, y, NeedleBBox[2], NeedleBBox[3]])
 				CroppedHaystack_RawData = CroppedHaystack.getdata()
 
 				found = True
@@ -54,11 +50,10 @@ def CompareImage(Haystack, Needle):
 
 				if found:
 					bbox = [x, y, x + NeedleBBox[2], y + NeedleBBox[3]]
-					print bbox
 					CroppedHaystack = Haystack.crop(bbox)
 					CroppedHaystack.load()
-					CroppedHaystack.save("test.png")
-					return bbox
+					CroppedHaystack.save("debug.png")
+					return [x, y]
 
 				break
 
@@ -70,4 +65,20 @@ def CompareImage(Haystack, Needle):
 
 	return None
 
-CompareImage(screenshot, TweetDeck_TextBox)
+x, y = CompareImage(screenshot, TweetDeck_TextBox)
+
+import win32api, win32con
+def click(x,y):
+    win32api.SetCursorPos((x,y))
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,x,y,0,0)
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,x,y,0,0)
+
+offset = 50
+click(x + offset, y + offset)
+
+# http://code.activestate.com/recipes/65107/
+
+import win32com.client
+shell = win32com.client.Dispatch("WScript.Shell")
+shell.SendKeys("It works! Just a few more cleanup... https://github.com/MrValdez/TweetDeck-interface")
+shell.SendKeys("~")

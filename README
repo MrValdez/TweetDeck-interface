@@ -1,1 +1,7 @@
 Code I worked on during the Code Retreat on Dec 3, 2011
+
+Required package:
+	* PIL
+	** http://www.pythonware.com/products/pil/
+	* Sendkeys
+	** http://www.rutherfurd.net/python/sendkeys/
